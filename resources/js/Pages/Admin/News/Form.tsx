@@ -1,11 +1,12 @@
-import { Head, useForm, Link } from '@inertiajs/react';
+import { Head, useForm, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { ArrowLeft, Save, Eye } from 'lucide-react';
+import { ArrowLeft, Save, Eye, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface News {
     id: number;
     title: string;
+    slug: string;
     excerpt: string | null;
     body: string;
     category: string;
@@ -20,22 +21,21 @@ interface Props {
 export default function AdminNewsForm({ news }: Props) {
     const isEdit = !!news;
 
-    const { data, setData, post, put, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
+        _method:     isEdit ? 'put' : 'post',
         title:       news?.title       ?? '',
         excerpt:     news?.excerpt     ?? '',
         body:        news?.body        ?? '',
         category:    news?.category    ?? 'berita',
-        status:      news?.status      ?? 'draft',
+        status:      news?.status      ?? 'published',
         cover_image: null as File | null,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (isEdit) {
-            put(`/admin/berita/${news.id}`, { forceFormData: true } as any);
-        } else {
-            post('/admin/berita', { forceFormData: true } as any);
-        }
+        post(isEdit ? `/admin/berita/${news.id}` : '/admin/berita', {
+            forceFormData: true,
+        });
     };
 
     const inputClass = (field: string) => cn(
@@ -51,9 +51,23 @@ export default function AdminNewsForm({ news }: Props) {
             <Head title={`${isEdit ? 'Edit' : 'Tulis'} Berita — Admin`} />
 
             <div className="max-w-3xl">
-                <Link href="/admin/berita" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 transition-colors mb-5">
-                    <ArrowLeft className="w-4 h-4" /> Kembali ke Daftar Berita
-                </Link>
+                <div className="flex items-center justify-between mb-5">
+                    <Link href="/admin/berita" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 transition-colors">
+                        <ArrowLeft className="w-4 h-4" /> Kembali ke Daftar Berita
+                    </Link>
+
+                    {isEdit && (
+                        <a
+                            href={`/berita/${news.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors shadow-2xs"
+                        >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                            <span>Lihat di Website Publik</span>
+                        </a>
+                    )}
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-5">

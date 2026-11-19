@@ -48,11 +48,63 @@ class DashboardController extends Controller
             ->get()
             ->groupBy('type');
 
+        // Tren Persuratan & Pengaduan 6 Bulan Terakhir
+        $monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        $monthlyStats = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $mIdx = (int)$date->format('n') - 1;
+            $label = $monthNames[$mIdx];
+            $year = (int)$date->format('Y');
+            $month = (int)$date->format('n');
+
+            $srCount = ServiceRequest::whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->count();
+            $complaintCount = Complaint::whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->count();
+
+            $monthlyStats[] = [
+                'month'       => $label,
+                'surat'       => $srCount,
+                'pengaduan'   => $complaintCount,
+            ];
+        }
+
+        // Distribusi UMKM berdasarkan Kategori
+        $umkmDistribution = Umkm::selectRaw('type, count(*) as count')
+            ->groupBy('type')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => ucfirst($item->type),
+                    'total' => (int)$item->count,
+                ];
+            });
+
+        // Detail Alokasi Belanja APBDes
+        $belanjaCategories = Apbdes::where('year', now()->year)
+            ->where('type', 'belanja')
+            ->whereNull('month')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'category'  => $item->category,
+                    'anggaran'  => (float) $item->budgeted_amount,
+                    'realisasi' => (float) $item->realized_amount,
+                    'persen'    => $item->budgeted_amount > 0 ? round(($item->realized_amount / $item->budgeted_amount) * 100, 1) : 0,
+                ];
+            });
+
         return Inertia::render('Admin/Dashboard', [
             'stats'             => $stats,
             'recentRequests'    => $recentRequests,
             'recentComplaints'  => $recentComplaints,
             'apbdesSummary'     => $apbdesSummary,
+            'monthlyStats'      => $monthlyStats,
+            'umkmDistribution'  => $umkmDistribution,
+            'belanjaCategories' => $belanjaCategories,
         ]);
     }
 }

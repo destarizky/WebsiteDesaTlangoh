@@ -42,6 +42,35 @@ class ServiceRequestController extends Controller
         ]);
     }
 
+    public function updateStatus(Request $request, ServiceRequest $serviceRequest): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status'      => 'required|in:pending,processing,approved,rejected',
+            'admin_notes' => 'nullable|string',
+        ]);
+
+        $data = [
+            'status'       => $validated['status'],
+            'admin_notes'  => $validated['admin_notes'] ?? null,
+            'processed_by' => auth()->id(),
+        ];
+
+        if (in_array($validated['status'], ['approved', 'rejected', 'processing'])) {
+            $data['processed_at'] = now();
+        }
+
+        $serviceRequest->update($data);
+
+        $statusLabel = [
+            'pending'    => 'Menunggu',
+            'processing' => 'Sedang Diproses',
+            'approved'   => 'Disetujui',
+            'rejected'   => 'Ditolak',
+        ][$validated['status']] ?? $validated['status'];
+
+        return back()->with('success', "Status permohonan surat berhasil diubah menjadi {$statusLabel}.");
+    }
+
     public function approve(ServiceRequest $serviceRequest): RedirectResponse
     {
         $serviceRequest->update([

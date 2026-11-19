@@ -26,6 +26,7 @@ Route::middleware(['auth', 'verified', 'role:admin|kades|sekdes|operator'])
         // Service Requests (Persuratan)
         Route::get('/surat', [ServiceRequestController::class, 'index'])->name('services.index');
         Route::get('/surat/{serviceRequest}', [ServiceRequestController::class, 'show'])->name('services.show');
+        Route::patch('/surat/{serviceRequest}/status', [ServiceRequestController::class, 'updateStatus'])->name('services.update-status');
         Route::patch('/surat/{serviceRequest}/approve', [ServiceRequestController::class, 'approve'])->name('services.approve');
         Route::patch('/surat/{serviceRequest}/reject', [ServiceRequestController::class, 'reject'])->name('services.reject');
         Route::patch('/surat/{serviceRequest}/process', [ServiceRequestController::class, 'process'])->name('services.process');
@@ -37,6 +38,7 @@ Route::middleware(['auth', 'verified', 'role:admin|kades|sekdes|operator'])
 
         // News & Announcements (CMS)
         Route::resource('berita', NewsController::class)
+            ->parameters(['berita' => 'news'])
             ->names([
                 'index'   => 'news.index',
                 'create'  => 'news.create',

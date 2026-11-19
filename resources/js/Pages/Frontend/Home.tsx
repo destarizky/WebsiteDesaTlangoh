@@ -5,8 +5,9 @@ import {
     ArrowRight, Users, MapPin, Home as HomeIcon, FileText, MessageSquare,
     BarChart3, TrendingUp, Landmark, ChevronRight, Clock,
     Leaf, TreePine, Waves, ShieldCheck, CheckCircle2, Building2,
-    Sparkles, PhoneCall, Compass, Search, ExternalLink,
-    FileCheck2, BadgeCheck, CalendarDays, ArrowUpRight
+    Sparkles, Palette, PhoneCall, Compass, Search, ExternalLink,
+    FileCheck2, BadgeCheck, CalendarDays, ArrowUpRight,
+    UtensilsCrossed, ShoppingBag, Wrench, Store
 } from 'lucide-react';
 import { formatDate, formatRupiah } from '@/lib/utils';
 import {
@@ -69,12 +70,12 @@ const categoryBadgeColors: Record<string, string> = {
     agenda: 'bg-sky-50 text-sky-700 border border-sky-200/60',
 };
 
-const typeLabels: Record<string, { label: string; icon: string; bg: string }> = {
-    produk: { label: 'Produk Lokal', icon: '🛍️', bg: 'bg-amber-50 text-amber-800' },
-    kuliner: { label: 'Kuliner & Olahan', icon: '🍲', bg: 'bg-orange-50 text-orange-800' },
-    kerajinan: { label: 'Batik & Kerajinan', icon: '🎨', bg: 'bg-purple-50 text-purple-800' },
-    wisata: { label: 'Wisata Bahari', icon: '🏖️', bg: 'bg-teal-50 text-teal-800' },
-    jasa: { label: 'Jasa & Servis', icon: '🔧', bg: 'bg-blue-50 text-blue-800' },
+const typeConfig: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; bg: string; iconColor: string }> = {
+    produk: { label: 'Produk Lokal', icon: ShoppingBag, bg: 'bg-amber-50/95 text-amber-900 border-amber-200/80', iconColor: 'text-amber-600' },
+    kuliner: { label: 'Kuliner & Olahan', icon: UtensilsCrossed, bg: 'bg-orange-50/95 text-orange-900 border-orange-200/80', iconColor: 'text-orange-600' },
+    kerajinan: { label: 'Batik & Kerajinan', icon: Palette, bg: 'bg-purple-50/95 text-purple-900 border-purple-200/80', iconColor: 'text-purple-600' },
+    wisata: { label: 'Wisata Bahari', icon: Waves, bg: 'bg-teal-50/95 text-teal-900 border-teal-200/80', iconColor: 'text-teal-600' },
+    jasa: { label: 'Jasa & Servis', icon: Wrench, bg: 'bg-blue-50/95 text-blue-900 border-blue-200/80', iconColor: 'text-blue-600' },
 };
 
 const quickServices = [
@@ -184,82 +185,147 @@ export default function Home({
         <PublicLayout>
             <Head title="Website Resmi Desa Tlangoh — Mandiri, Maju & Transparan" />
 
-            {/* ─── 1. HERO SECTION (ALAM & IDENTITAS RESMI DESA) ─── */}
-            <section className="relative min-h-[640px] lg:min-h-[720px] flex items-center justify-center overflow-hidden bg-emerald-950 text-white">
-                {/* Background Image: Lanskap Pesisir & Alam Tropis Desa */}
-                <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105 transform motion-safe:animate-fade-in"
-                    style={{
-                        backgroundImage: `url('https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&w=2000&q=80')`,
-                    }}
-                />
+            {/* ─── 1. HERO SECTION (VIDEO BACKGROUND & IDENTITAS RESMI DESA) ─── */}
+            <section className="relative min-h-[580px] lg:min-h-[640px] flex items-center justify-center overflow-hidden bg-stone-950 text-white">
+                {/* Background Video: Video Profil Desa Tlangoh (No external poster on refresh) */}
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="auto"
+                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                >
+                    <source src="/videos/video-desa.mp4" type="video/mp4" />
+                </video>
 
-                {/* Multi-layered Realistic Gradient (Deep Forest + Warm Sunset Edge) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-950/85 to-emerald-950/70" />
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/90 via-emerald-950/75 to-transparent" />
+                {/* Soft Neutral Dark Overlay - natural video colors remain vibrant & text is fully legible */}
+                <div className="absolute inset-0 bg-stone-950/45" />
+                <div className="absolute inset-0 bg-gradient-to-r from-stone-950/90 via-stone-950/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-stone-950/30" />
 
-                {/* Subtle Traditional Batik / Geometric Texture */}
-                <div
-                    className="absolute inset-0 opacity-[0.035] pointer-events-none"
-                    style={{
-                        backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-                        backgroundSize: '32px 32px',
-                    }}
-                />
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 lg:pt-32 lg:pb-24 w-full">
+                    <div className="grid lg:grid-cols-12 gap-8 items-center">
+                        {/* Kolom Kiri: Teks & Aksi Utama */}
+                        <div className="lg:col-span-8 max-w-3xl">
+                            {/* Live Badge & Official Badge */}
+                            <div className="flex flex-wrap items-center gap-2.5 mb-5">
+                                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-xs font-semibold text-emerald-200 backdrop-blur-md shadow-sm">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                                    </span>
+                                    <span>Video Profil Desa</span>
+                                </div>
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-medium text-emerald-200 shadow-sm">
+                                    <MapPin className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
+                                    <span>Pemkab Bangkalan • Kec. Tanjungbumi</span>
+                                </div>
+                            </div>
 
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-28 lg:pt-36 lg:pb-32 w-full">
-                    <div className="max-w-3xl">
-                        {/* Official Badge */}
-                        <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-medium text-emerald-200 mb-6 shadow-sm">
-                            <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                            <span>🇮🇩 Pemerintah Kabupaten Bangkalan • Kecamatan Tanjungbumi</span>
+                            {/* Main Headline */}
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.18] mb-5">
+                                Portal Resmi & <br className="hidden sm:inline" />
+                                Pelayanan Warga <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-emerald-400">
+                                    Desa Tlangoh
+                                </span>
+                            </h1>
+
+                            {/* Subtitle */}
+                            <p className="text-sm sm:text-base text-stone-200/90 leading-relaxed font-normal mb-7 max-w-xl">
+                                Selamat datang di pusat layanan digital Desa Tlangoh. Mengurus surat pengantar mandiri, memantau transparansi anggaran pembangunan, serta menjelajahi keindahan wisata bahari dan ragam produk UMKM unggulan warga.
+                            </p>
+
+                            {/* Action Buttons */}
+                            <div className="flex flex-wrap items-center gap-3.5 mb-8">
+                                <Link
+                                    href="/layanan-surat"
+                                    className="inline-flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm sm:text-base rounded-xl transition-all shadow-xl shadow-black/40 hover:shadow-emerald-500/25 hover:-translate-y-0.5 active:translate-y-0"
+                                >
+                                    <FileText className="w-4 h-4 text-emerald-100" />
+                                    <span>Ajukan Surat Online</span>
+                                    <ArrowRight className="w-4 h-4 ml-0.5" />
+                                </Link>
+
+                                <Link
+                                    href="/layanan-surat/lacak"
+                                    className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-medium text-sm sm:text-base rounded-xl border border-white/25 backdrop-blur-md transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-lg"
+                                >
+                                    <Clock className="w-4 h-4 text-emerald-300" />
+                                    <span>Lacak Permohonan</span>
+                                </Link>
+                            </div>
+
+                            {/* Status Pelayanan Desa Info */}
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-stone-300/80 pt-4 border-t border-white/10">
+                                <div className="flex items-center gap-2">
+                                    <BadgeCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                                    <span>Layanan Mandiri Warga 24 Jam</span>
+                                </div>
+                                <span className="hidden sm:inline text-white/30">•</span>
+                                <div className="flex items-center gap-2">
+                                    <Building2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                                    <span>Kantor Balai Desa: Senin – Jumat</span>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Main Headline */}
-                        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] mb-6">
-                            Portal Resmi & <br className="hidden sm:inline" />
-                            Pelayanan Warga <br />
-                            <span className="text-emerald-300 underline decoration-emerald-400/50 decoration-wavy decoration-2">
-                                Desa Tlangoh
-                            </span>
-                        </h1>
+                        {/* Kolom Kanan: Highlight Kartu Kaca dengan Link Cepat */}
+                        <div className="hidden lg:block lg:col-span-4 space-y-3">
+                            <Link
+                                href="/potensi-umkm?type=wisata"
+                                className="group flex items-center gap-3.5 p-4 rounded-2xl bg-stone-900/40 hover:bg-stone-900/70 backdrop-blur-md border border-white/10 hover:border-emerald-400/40 shadow-lg transition-all duration-300 hover:-translate-y-0.5"
+                            >
+                                <div className="w-11 h-11 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0">
+                                    <Waves className="w-5 h-5 text-emerald-300" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-sm font-bold text-white group-hover:text-emerald-200 transition-colors">
+                                        Wisata Pantai Tlangoh
+                                    </div>
+                                    <div className="text-xs text-stone-300/80 truncate">
+                                        Destinasi Bahari Pesisir Madura
+                                    </div>
+                                </div>
+                                <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-emerald-300 group-hover:translate-x-1 transition-all shrink-0" />
+                            </Link>
 
-                        {/* Subtitle */}
-                        <p className="text-base sm:text-lg text-emerald-50/90 leading-relaxed font-normal mb-8 max-w-2xl">
-                            Selamat datang di pusat layanan digital Desa Tlangoh. Mengurus surat pengantar mandiri, memantau transparansi anggaran pembangunan, serta menjelajahi keindahan wisata bahari dan ragam produk UMKM unggulan warga.
-                        </p>
+                            <Link
+                                href="/potensi-umkm?type=kerajinan"
+                                className="group flex items-center gap-3.5 p-4 rounded-2xl bg-stone-900/40 hover:bg-stone-900/70 backdrop-blur-md border border-white/10 hover:border-amber-400/40 shadow-lg transition-all duration-300 hover:-translate-y-0.5"
+                            >
+                                <div className="w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center shrink-0">
+                                    <Palette className="w-5 h-5 text-amber-300" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-sm font-bold text-white group-hover:text-amber-200 transition-colors">
+                                        Sentra Batik Tulis Tlangoh
+                                    </div>
+                                    <div className="text-xs text-stone-300/80 truncate">
+                                        Karya Warisan Budaya Nusantara
+                                    </div>
+                                </div>
+                                <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-amber-300 group-hover:translate-x-1 transition-all shrink-0" />
+                            </Link>
 
-                        {/* Action Buttons */}
-                        <div className="flex flex-wrap items-center gap-3.5 mb-10">
                             <Link
                                 href="/layanan-surat"
-                                className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm sm:text-base rounded-xl transition-all shadow-lg shadow-emerald-950/40 hover:-translate-y-0.5 active:translate-y-0"
+                                className="group flex items-center gap-3.5 p-4 rounded-2xl bg-stone-900/40 hover:bg-stone-900/70 backdrop-blur-md border border-white/10 hover:border-teal-400/40 shadow-lg transition-all duration-300 hover:-translate-y-0.5"
                             >
-                                <FileText className="w-5 h-5 text-emerald-100" />
-                                <span>Ajukan Surat Online</span>
-                                <ArrowRight className="w-4 h-4 ml-0.5" />
+                                <div className="w-11 h-11 rounded-xl bg-teal-500/20 border border-teal-400/30 flex items-center justify-center shrink-0">
+                                    <ShieldCheck className="w-5 h-5 text-teal-300" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-sm font-bold text-white group-hover:text-teal-200 transition-colors">
+                                        Pelayanan Administrasi Bebas Pungli
+                                    </div>
+                                    <div className="text-xs text-stone-300/80 truncate">
+                                        Urus Surat Resmi Tanpa Antrean
+                                    </div>
+                                </div>
+                                <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-teal-300 group-hover:translate-x-1 transition-all shrink-0" />
                             </Link>
-
-                            <Link
-                                href="/layanan-surat/lacak"
-                                className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-medium text-sm sm:text-base rounded-xl border border-white/25 backdrop-blur-md transition-all hover:-translate-y-0.5 active:translate-y-0"
-                            >
-                                <Clock className="w-4 h-4 text-emerald-300" />
-                                <span>Lacak Permohonan</span>
-                            </Link>
-                        </div>
-
-                        {/* Status Pelayanan Desa Info */}
-                        <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-emerald-100/80 pt-4 border-t border-white/10">
-                            <div className="flex items-center gap-2">
-                                <BadgeCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                                <span>Layanan Mandiri Warga 24 Jam</span>
-                            </div>
-                            <span className="hidden sm:inline text-white/30">•</span>
-                            <div className="flex items-center gap-2">
-                                <Building2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                                <span>Kantor Desa: Senin – Kamis 08.00–15.00 WIB | Jumat 08.00–11.30 WIB</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -623,8 +689,8 @@ export default function Home({
                                     key={cat}
                                     onClick={() => setSelectedCategory(cat)}
                                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all capitalize ${selectedCategory === cat
-                                            ? 'bg-white text-emerald-900 shadow-sm'
-                                            : 'text-stone-700 hover:text-stone-900'
+                                        ? 'bg-white text-emerald-900 shadow-sm'
+                                        : 'text-stone-700 hover:text-stone-900'
                                         }`}
                                 >
                                     {cat === 'all' ? 'Semua' : cat}
@@ -920,7 +986,13 @@ export default function Home({
                     {umkmFeatured.length > 0 ? (
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {umkmFeatured.map((item) => {
-                                const badgeInfo = typeLabels[item.type] || { label: item.type, icon: '🏪', bg: 'bg-stone-100 text-stone-700' };
+                                const badgeInfo = typeConfig[item.type] || {
+                                    label: item.type,
+                                    icon: Store,
+                                    bg: 'bg-stone-50/95 text-stone-800 border-stone-200',
+                                    iconColor: 'text-stone-600'
+                                };
+                                const BadgeIcon = badgeInfo.icon;
 
                                 return (
                                     <div
@@ -931,19 +1003,20 @@ export default function Home({
                                             <div className="relative aspect-[16/10] bg-stone-100 overflow-hidden">
                                                 {item.cover_image ? (
                                                     <img
-                                                        src={`/storage/${item.cover_image}`}
+                                                        src={item.cover_image.startsWith('http') || item.cover_image.startsWith('/') ? item.cover_image : `/storage/${item.cover_image}`}
                                                         alt={item.name}
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-teal-50 flex items-center justify-center text-4xl">
-                                                        <span>{badgeInfo.icon}</span>
+                                                    <div className="w-full h-full bg-gradient-to-br from-stone-50 to-emerald-50 flex items-center justify-center text-emerald-600/40">
+                                                        <BadgeIcon className="w-14 h-14 stroke-[1.5]" />
                                                     </div>
                                                 )}
 
                                                 <div className="absolute top-3 left-3">
-                                                    <span className={`px-2.5 py-1 text-xs font-bold rounded-lg shadow-sm ${badgeInfo.bg}`}>
-                                                        {badgeInfo.icon} {badgeInfo.label}
+                                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-xl shadow-xs backdrop-blur-md bg-white/95 border ${badgeInfo.bg}`}>
+                                                        <BadgeIcon className={`w-3.5 h-3.5 ${badgeInfo.iconColor}`} />
+                                                        <span>{badgeInfo.label}</span>
                                                     </span>
                                                 </div>
                                             </div>

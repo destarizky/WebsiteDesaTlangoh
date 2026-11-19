@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { ReactNode, useEffect, useState } from 'react';
 import { Menu, X, Search, FileText, ChevronDown, Phone, MapPin, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -23,6 +23,9 @@ const navLinks = [
 ];
 
 export default function PublicLayout({ children }: PublicLayoutProps) {
+    const { url } = usePage();
+    const isHome = url === '/' || url === '';
+
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -33,15 +36,18 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    // Navbar hanya transparan di halaman Beranda saat belum discroll
+    const isTransparent = isHome && !isScrolled;
+
     return (
         <div className="min-h-screen bg-stone-50 font-sans">
             {/* Navbar */}
             <header
                 className={cn(
                     'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-                    isScrolled
-                        ? 'bg-white/90 backdrop-blur-md shadow-sm border-b border-stone-200/60'
-                        : 'bg-transparent'
+                    isTransparent
+                        ? 'bg-transparent text-white'
+                        : 'bg-white/95 backdrop-blur-md shadow-sm border-b border-stone-200/80 text-stone-900'
                 )}
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,10 +62,10 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                                 />
                             </div>
                             <div>
-                                <div className={cn('font-bold text-sm leading-tight transition-colors', isScrolled ? 'text-stone-900' : 'text-white')}>
+                                <div className={cn('font-bold text-sm leading-tight transition-colors', isTransparent ? 'text-white' : 'text-stone-900')}>
                                     Desa Tlangoh
                                 </div>
-                                <div className={cn('text-xs font-medium transition-colors', isScrolled ? 'text-emerald-600' : 'text-emerald-300')}>
+                                <div className={cn('text-xs font-medium transition-colors', isTransparent ? 'text-emerald-300' : 'text-emerald-700')}>
                                     Kec. Tanjungbumi, Bangkalan
                                 </div>
                             </div>
@@ -74,7 +80,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                                             onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
                                             className={cn(
                                                 'flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all',
-                                                isScrolled ? 'text-stone-700 hover:text-emerald-600 hover:bg-emerald-50' : 'text-stone-200 hover:text-white hover:bg-white/10'
+                                                isTransparent ? 'text-stone-200 hover:text-white hover:bg-white/10' : 'text-stone-700 hover:text-emerald-700 hover:bg-emerald-50'
                                             )}
                                         >
                                             {link.label}
@@ -101,7 +107,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                                         href={link.href!}
                                         className={cn(
                                             'px-4 py-2 rounded-xl text-sm font-medium transition-all',
-                                            isScrolled ? 'text-stone-700 hover:text-emerald-600 hover:bg-emerald-50' : 'text-stone-200 hover:text-white hover:bg-white/10'
+                                            isTransparent ? 'text-stone-200 hover:text-white hover:bg-white/10' : 'text-stone-700 hover:text-emerald-700 hover:bg-emerald-50'
                                         )}
                                     >
                                         {link.label}
@@ -123,7 +129,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                                 className={cn(
                                     'lg:hidden p-2 rounded-xl transition-colors',
-                                    isScrolled ? 'text-stone-700 hover:bg-stone-100' : 'text-white hover:bg-white/10'
+                                    isTransparent ? 'text-white hover:bg-white/10' : 'text-stone-700 hover:bg-stone-100'
                                 )}
                                 aria-label="Toggle menu"
                             >
@@ -178,8 +184,8 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                 )}
             </header>
 
-            {/* Main Content */}
-            <main>{children}</main>
+            {/* Main Content dengan padding-top di selain beranda agar tidak tertutup header fixed */}
+            <main className={cn(!isHome && 'pt-16 lg:pt-20')}>{children}</main>
 
             {/* Footer */}
             <footer className="bg-stone-900 text-stone-300">

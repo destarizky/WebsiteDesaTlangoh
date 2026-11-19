@@ -30,7 +30,7 @@ class ComplaintController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'reporter_name'   => 'required_if:is_anonymous,false|nullable|string|max:255',
+            'reporter_name'   => 'nullable|string|max:255',
             'reporter_phone'  => 'nullable|string|max:20',
             'category'        => 'required|in:infrastruktur,pelayanan_publik,lingkungan,keamanan,sosial,lainnya',
             'subject'         => 'required|string|max:255',
@@ -39,6 +39,14 @@ class ComplaintController extends Controller
             'attachment'      => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'is_anonymous'    => 'boolean',
         ]);
+
+        $isAnonymous = $request->boolean('is_anonymous');
+        $validated['is_anonymous'] = $isAnonymous;
+
+        if ($isAnonymous || empty($validated['reporter_name'])) {
+            $validated['reporter_name'] = 'Warga (Anonim)';
+            $validated['reporter_phone'] = null;
+        }
 
         if ($request->hasFile('attachment')) {
             $validated['attachment'] = $request->file('attachment')->store('complaint-attachments', 'public');

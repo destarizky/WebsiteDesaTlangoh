@@ -1,8 +1,9 @@
 import { Head, useForm, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Plus, Pencil, Trash2, Search, Filter, Eye } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Filter, Eye, ExternalLink } from 'lucide-react';
 import { cn, getStatusColor, getStatusLabel, formatDate } from '@/lib/utils';
 import { useState } from 'react';
+import ConfirmModal from '@/Components/ConfirmModal';
 
 interface News {
     id: number;
@@ -42,9 +43,17 @@ export default function AdminNewsIndex({ news, filters }: Props) {
         router.get('/admin/berita', { search, status }, { preserveState: true });
     };
 
-    const handleDelete = (id: number, title: string) => {
-        if (confirm(`Hapus berita "${title}"?`)) {
-            router.delete(`/admin/berita/${id}`);
+    const [deleteModal, setDeleteModal] = useState<{ show: boolean; id?: number; title?: string }>({
+        show: false,
+    });
+
+    const openDeleteModal = (id: number, title: string) => {
+        setDeleteModal({ show: true, id, title });
+    };
+
+    const confirmDelete = () => {
+        if (deleteModal.id) {
+            router.delete(`/admin/berita/${deleteModal.id}`);
         }
     };
 
@@ -83,12 +92,24 @@ export default function AdminNewsIndex({ news, filters }: Props) {
                             <Filter className="w-4 h-4" /> Filter
                         </button>
                     </div>
-                    <Link
-                        href="/admin/berita/create"
-                        className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition-colors"
-                    >
-                        <Plus className="w-4 h-4" /> Tulis Berita
-                    </Link>
+                    <div className="flex items-center gap-2">
+                        <a
+                            href="/berita"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-xl transition-colors border border-slate-200 shadow-2xs"
+                            title="Buka halaman kabar desa di website publik"
+                        >
+                            <ExternalLink className="w-4 h-4 text-emerald-600" />
+                            <span className="hidden sm:inline">Halaman Publik (/berita)</span>
+                        </a>
+                        <Link
+                            href="/admin/berita/create"
+                            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-xs"
+                        >
+                            <Plus className="w-4 h-4" /> Tulis Berita
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Stats */}
@@ -146,7 +167,7 @@ export default function AdminNewsIndex({ news, filters }: Props) {
                                                 <Pencil className="w-4 h-4" />
                                             </Link>
                                             <button
-                                                onClick={() => handleDelete(item.id, item.title)}
+                                                onClick={() => openDeleteModal(item.id, item.title)}
                                                 className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                                                 title="Hapus"
                                             >
@@ -186,6 +207,17 @@ export default function AdminNewsIndex({ news, filters }: Props) {
                         </div>
                     )}
                 </div>
+
+                {/* Custom Confirmation Modal */}
+                <ConfirmModal
+                    show={deleteModal.show}
+                    title="Hapus Berita Ini?"
+                    message={`Apakah Anda yakin ingin menghapus berita "${deleteModal.title}"? Data yang sudah dihapus tidak dapat dipulihkan kembali.`}
+                    confirmText="Ya, Hapus Berita"
+                    cancelText="Batal"
+                    onConfirm={confirmDelete}
+                    onClose={() => setDeleteModal({ show: false })}
+                />
             </div>
         </AdminLayout>
     );

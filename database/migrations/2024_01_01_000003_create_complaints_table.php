@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('complaints', function (Blueprint $table) {
             $table->id();
             $table->string('ticket_number')->unique();
-            $table->string('reporter_name');
+            $table->string('reporter_name')->nullable();
             $table->string('reporter_phone')->nullable();
             $table->enum('category', [
                 'infrastruktur',

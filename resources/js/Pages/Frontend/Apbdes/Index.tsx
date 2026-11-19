@@ -1,8 +1,9 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import {
     TrendingUp, PiggyBank, ArrowDownRight, ArrowUpRight,
-    BarChart3, CheckCircle2, Calendar, FileSpreadsheet, Percent
+    BarChart3, CheckCircle2, Calendar, FileSpreadsheet, Percent,
+    Settings, Plus
 } from 'lucide-react';
 import { formatRupiah, cn } from '@/lib/utils';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export default function ApbdesIndex({ apbdes, selectedYear, years }: Props) {
+    const { auth } = usePage<{ auth: { user?: { name: string; email: string } } }>().props;
     const pendapatanItems = apbdes['pendapatan'] || [];
     const belanjaItems    = apbdes['belanja'] || [];
     const pembiayaanItems = apbdes['pembiayaan'] || [];

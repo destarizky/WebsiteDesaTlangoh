@@ -1,6 +1,6 @@
 import { Head, useForm, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, ExternalLink } from 'lucide-react';
 import { cn, formatRupiah } from '@/lib/utils';
 import { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -107,12 +107,24 @@ export default function AdminApbdesIndex({ data, years, selectedYear, summary }:
                             <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
                         </select>
                     </div>
-                    <button
-                        onClick={() => { setShowForm(!showForm); setEditItem(null); reset(); }}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg"
-                    >
-                        <Plus className="w-4 h-4" /> Tambah Data APBDes
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <a
+                            href="/apbdes"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-xl transition-colors border border-slate-200 shadow-2xs"
+                            title="Buka laporan APBDes di website publik"
+                        >
+                            <ExternalLink className="w-4 h-4 text-emerald-600" />
+                            <span className="hidden sm:inline">Halaman Publik (/apbdes)</span>
+                        </a>
+                        <button
+                            onClick={() => { setShowForm(!showForm); setEditItem(null); reset(); }}
+                            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow-xs"
+                        >
+                            <Plus className="w-4 h-4" /> Tambah Data APBDes
+                        </button>
+                    </div>
                 </div>
 
                 {/* Summary Cards */}

@@ -1,6 +1,6 @@
-import { Head, useForm, Link } from '@inertiajs/react';
+import { Head, useForm, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface UmkmItem {
@@ -25,7 +25,8 @@ interface Props {
 export default function AdminUmkmForm({ item }: Props) {
     const isEdit = !!item;
 
-    const { data, setData, post, put, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
+        _method:      isEdit ? 'put' : 'post',
         name:         item?.name         ?? '',
         type:         item?.type         ?? 'produk',
         description:  item?.description  ?? '',
@@ -41,11 +42,9 @@ export default function AdminUmkmForm({ item }: Props) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (isEdit) {
-            put(`/admin/umkm/${item.id}`, { forceFormData: true } as any);
-        } else {
-            post('/admin/umkm', { forceFormData: true } as any);
-        }
+        post(isEdit ? `/admin/umkm/${item.id}` : '/admin/umkm', {
+            forceFormData: true,
+        });
     };
 
     const inputClass = (field: string) => cn(
@@ -59,9 +58,21 @@ export default function AdminUmkmForm({ item }: Props) {
             <Head title={`${isEdit ? 'Edit' : 'Tambah'} UMKM — Admin`} />
 
             <div className="max-w-2xl">
-                <Link href="/admin/umkm" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 mb-5">
-                    <ArrowLeft className="w-4 h-4" /> Kembali
-                </Link>
+                <div className="flex items-center justify-between mb-5">
+                    <Link href="/admin/umkm" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900">
+                        <ArrowLeft className="w-4 h-4" /> Kembali ke Daftar UMKM
+                    </Link>
+
+                    <a
+                        href="/potensi-umkm"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors shadow-2xs"
+                    >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Lihat di Website (/potensi-umkm)</span>
+                    </a>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-5">

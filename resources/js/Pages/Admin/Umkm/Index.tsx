@@ -1,8 +1,9 @@
 import { Head, useForm, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Plus, Trash2, Pencil, Search, Filter } from 'lucide-react';
+import { Plus, Trash2, Pencil, Search, Filter, ExternalLink, Eye } from 'lucide-react';
 import { cn, formatRupiah } from '@/lib/utils';
 import { useState } from 'react';
+import ConfirmModal from '@/Components/ConfirmModal';
 
 interface UmkmItem {
     id: number;
@@ -39,9 +40,17 @@ export default function AdminUmkmIndex({ items, filters }: Props) {
         router.get('/admin/umkm', { search, type }, { preserveState: true });
     };
 
-    const handleDelete = (id: number, name: string) => {
-        if (confirm(`Hapus UMKM "${name}"?`)) {
-            router.delete(`/admin/umkm/${id}`);
+    const [deleteModal, setDeleteModal] = useState<{ show: boolean; id?: number; name?: string }>({
+        show: false,
+    });
+
+    const openDeleteModal = (id: number, name: string) => {
+        setDeleteModal({ show: true, id, name });
+    };
+
+    const confirmDelete = () => {
+        if (deleteModal.id) {
+            router.delete(`/admin/umkm/${deleteModal.id}`);
         }
     };
 
@@ -75,32 +84,55 @@ export default function AdminUmkmIndex({ items, filters }: Props) {
                             <Filter className="w-4 h-4" /> Filter
                         </button>
                     </div>
-                    <Link
-                        href="/admin/umkm/create"
-                        className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg"
-                    >
-                        <Plus className="w-4 h-4" /> Tambah UMKM
-                    </Link>
+                    <div className="flex items-center gap-2">
+                        <a
+                            href="/potensi-umkm"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-xl transition-colors border border-slate-200 shadow-2xs"
+                            title="Buka halaman potensi UMKM di website publik"
+                        >
+                            <ExternalLink className="w-4 h-4 text-emerald-600" />
+                            <span className="hidden sm:inline">Halaman Publik (/potensi-umkm)</span>
+                        </a>
+                        <Link
+                            href="/admin/umkm/create"
+                            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow-xs"
+                        >
+                            <Plus className="w-4 h-4" /> Tambah UMKM
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {items.data.map((item) => (
-                        <div key={item.id} className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-sm transition-shadow">
+                        <div key={item.id} className="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all">
                             <div className="flex items-start justify-between gap-3 mb-3">
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-semibold text-slate-900 truncate">{item.name}</h3>
                                     <p className="text-xs text-slate-500 mt-0.5">{item.owner_name}</p>
                                 </div>
                                 <div className="flex gap-1.5 shrink-0">
+                                    <a
+                                        href="/potensi-umkm"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                        title="Lihat di website publik"
+                                    >
+                                        <Eye className="w-4 h-4" />
+                                    </a>
                                     <Link
                                         href={`/admin/umkm/${item.id}/edit`}
                                         className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+                                        title="Edit data UMKM"
                                     >
                                         <Pencil className="w-4 h-4" />
                                     </Link>
                                     <button
-                                        onClick={() => handleDelete(item.id, item.name)}
+                                        onClick={() => openDeleteModal(item.id, item.name)}
                                         className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                        title="Hapus"
                                     >
                                         <Trash2 className="w-4 h-4" />
                                     </button>
@@ -136,6 +168,17 @@ export default function AdminUmkmIndex({ items, filters }: Props) {
                         ))}
                     </div>
                 )}
+
+                {/* Custom Confirmation Modal */}
+                <ConfirmModal
+                    show={deleteModal.show}
+                    title="Hapus UMKM Ini?"
+                    message={`Apakah Anda yakin ingin menghapus UMKM "${deleteModal.name}"? Data yang sudah dihapus tidak dapat dipulihkan kembali.`}
+                    confirmText="Ya, Hapus UMKM"
+                    cancelText="Batal"
+                    onConfirm={confirmDelete}
+                    onClose={() => setDeleteModal({ show: false })}
+                />
             </div>
         </AdminLayout>
     );
